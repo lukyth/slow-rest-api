@@ -13,6 +13,8 @@ Part of the __The Node.js Performance Workshop__.
 
 ## Running Clinic Doctor
 
+_NOTE: This requires nodejs v9.4.0 or v8.9.4._
+
 1. Install [clinic](http://npm.im/clinic) with `npm install clinic -g`
 2. Run `clinic doctor -- node index`
 3. What is the problem?
@@ -29,6 +31,16 @@ A sample doctor output is included in `doctor.html`.
 5. CTRL-C the `clinic` process.
 
 A sample flamegraph is included in `flamegraph.html`.
+
+## Check when [TurboFan](https://github.com/v8/v8/wiki/TurboFan) inline a function
+```bash
+node --trace-turbo-inlining index.js | grep etag
+```
+
+## Check when [TurboFan](https://github.com/v8/v8/wiki/TurboFan) opt or deopt
+```bash
+node --trace-turbo-inlining --trace-opt --trace-deopt index.js > trace-output
+```
 
 ## License
 
