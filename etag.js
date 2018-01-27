@@ -10,7 +10,6 @@ function etag (entity, opts) {
     entity = opts.entity
   }
 
-  var error = false
   opts = opts || {}
   opts.algorithm = opts.algorithm || 'md5'
   opts.encoding = opts.encoding || 'utf8'
@@ -20,37 +19,18 @@ function etag (entity, opts) {
 
   try {
     hash = crypto
-    .createHash(opts.algorithm)
-    .update(entity, opts.encoding)
+      .createHash(opts.algorithm)
+      .update(entity, opts.encoding)
+      .digest(opts.output)
   } catch (e) {
-    error = true
-  }
-
-  if (!opts.output || opts.output === 'base64') {
-    try {
-      hash = hash && hash
-        .digest('base64')
-        .replace(/=+$/, '')
-    } catch (e) {
-      error = true
-    }
-
-    if (!error) {
-      return hash
-    }
-  }
-
-  try {
-    hash = hash && hash.digest(opts.output)
-  } catch (e) {
-    error = true
-  }
-
-  if (error) {
     return Error('oh oh')
   }
 
-  return hash
+  if (opts.output === 'base64') {
+    return hash.replace(/=+$/, '')
+  } else {
+    return hash
+  }
 
   /**
    *  DUMAIN. Will you vouchsafe with me to change a word?
