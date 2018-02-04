@@ -1,43 +1,25 @@
 'use strict'
 
+var http = require('http')
 var etag = require('./etag')
 var pkg = JSON.stringify(require('./package.json'))
 
-var restify = require('restify')
-var server = restify.createServer()
 var count = 1
 
-server.get('/a', function (req, res, next) {
-  var tag = etag(pkg + ++count)
-
+var server = http.createServer(function (req, res) {
+  if (req.method === 'GET') {
+    if (req.url === '/a') {
+      var tag = etag(pkg + ++count)
+    } else if (req.url === '/b') {
+      var tag = etag(pkg + ++count, { algorithm: 'sha512WithRsaEncryption' })
+    } else if (req.url === '/c') {
+      var tag = etag(pkg + ++count, { algorithm: 'sha512WithRsaEncryption' })
+    }
+  }
   if (!(tag instanceof Error)) {
     res.setHeader('ETag', tag)
   }
-
-  res.send(pkg)
-  return next()
-})
-
-server.get('/b', function (req, res, next) {
-  var tag = etag({entity: pkg + ++count, algorithm: 'sha256'})
-
-  if (!(tag instanceof Error)) {
-    res.setHeader('ETag', tag)
-  }
-
-  res.send(pkg)
-  return next()
-})
-
-server.get('/c', function (req, res, next) {
-  var tag = etag(pkg + ++count, {algorithm: 'sha512WithRsaEncryption'})
-
-  if (!(tag instanceof Error)) {
-    res.setHeader('ETag', tag)
-  }
-
-  res.send(pkg)
-  return next()
+  res.end(pkg)
 })
 
 server.listen(3000)
